@@ -286,27 +286,7 @@ setStudentName(name);
       }
 
       // today's log overrides if exists
-      const todayDoc = await getDoc(doc(db, "users", studentUid, "logs", dateKey));
-      if (todayDoc.exists()) {
-        const d = todayDoc.data() as any;
-        setSabak(toText(d.sabak));
-        setSabakDhor(toText(d.sabakDhor));
-        setDhor(toText(d.dhor));
-        setSabakDhorMistakes(toText(d.sabakDhorMistakes));
-        setDhorMistakes(toText(d.dhorMistakes));
-
-        // ✅ reading fields from today log (read from either naming style)
-        setSabakReadQuality(pickText(d.sabakRead, d.sabakReadQuality));
-        setSabakReadNotes(toText(d.sabakReadNotes));
-
-        setSabakDhorReadQuality(pickText(d.sabakDhorRead, d.sabakDhorReadQuality));
-        setSabakDhorReadNotes(toText(d.sabakDhorReadNotes));
-
-        setDhorReadQuality(pickText(d.dhorRead, d.dhorReadQuality));
-        setDhorReadNotes(toText(d.dhorReadNotes));
-
-        if (!weeklyGoal) setWeeklyGoal(toText(d.weeklyGoal));
-      }
+      
     }
 
     if (studentUid) loadStudent();
