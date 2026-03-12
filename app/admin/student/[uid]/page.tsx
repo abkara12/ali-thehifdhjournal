@@ -242,63 +242,60 @@ const [studentName, setStudentName] = useState("");
     return () => unsub();
   }, []);
 
-  useEffect(() => {
-
+ useEffect(() => {
   async function loadStudent() {
+    if (!studentUid) return;
+
+    // 🔹 Reset fields BEFORE loading student
+    resetFields();
+    setMarkGoalCompleted(false);
+    setMsg(null);
+
     const sDoc = await getDoc(doc(db, "users", studentUid));
-      if (sDoc.exists()) {
-        const data = sDoc.data() as any;
+    if (sDoc.exists()) {
+      const data = sDoc.data() as any;
 
-const name =
-  typeof data.username === "string"
-    ? data.username
-    : typeof data.email === "string"
-    ? data.email
-    : "Student";
+      const name =
+        typeof data.username === "string"
+          ? data.username
+          : typeof data.email === "string"
+          ? data.email
+          : "Student";
 
-setStudentName(name);
-        setWeeklyGoal(toText(data.weeklyGoal));
-        setWeeklyGoalWeekKey(toText(data.weeklyGoalWeekKey));
-        setWeeklyGoalStartDateKey(toText(data.weeklyGoalStartDateKey));
-        setWeeklyGoalCompletedDateKey(toText(data.weeklyGoalCompletedDateKey));
+      setStudentName(name);
+      setWeeklyGoal(toText(data.weeklyGoal));
+      setWeeklyGoalWeekKey(toText(data.weeklyGoalWeekKey));
+      setWeeklyGoalStartDateKey(toText(data.weeklyGoalStartDateKey));
+      setWeeklyGoalCompletedDateKey(toText(data.weeklyGoalCompletedDateKey));
 
-        const dur = data.weeklyGoalDurationDays;
-        setWeeklyGoalDurationDays(typeof dur === "number" ? dur : dur ? Number(dur) : null);
+      const dur = data.weeklyGoalDurationDays;
+      setWeeklyGoalDurationDays(typeof dur === "number" ? dur : dur ? Number(dur) : null);
 
-        // seed with snapshot
-        setSabak(toText(data.currentSabak));
-        setSabakDhor(toText(data.currentSabakDhor));
-        setDhor(toText(data.currentDhor));
-        setSabakDhorMistakes(toText(data.currentSabakDhorMistakes));
-        setDhorMistakes(toText(data.currentDhorMistakes));
+      // seed with snapshot
+      setSabak(toText(data.currentSabak));
+      setSabakDhor(toText(data.currentSabakDhor));
+      setDhor(toText(data.currentDhor));
+      setSabakDhorMistakes(toText(data.currentSabakDhorMistakes));
+      setDhorMistakes(toText(data.currentDhorMistakes));
 
-        // ✅ seed reading snapshot
-        // read from either naming style
-        setSabakReadQuality(pickText(data.currentSabakRead, data.currentSabakReadQuality));
-        setSabakReadNotes(toText(data.currentSabakReadNotes));
+      // ✅ seed reading snapshot
+      setSabakReadQuality(pickText(data.currentSabakRead, data.currentSabakReadQuality));
+      setSabakReadNotes(toText(data.currentSabakReadNotes));
 
-        setSabakDhorReadQuality(
-          pickText(data.currentSabakDhorRead, data.currentSabakDhorReadQuality)
-        );
-        setSabakDhorReadNotes(toText(data.currentSabakDhorReadNotes));
+      setSabakDhorReadQuality(
+        pickText(data.currentSabakDhorRead, data.currentSabakDhorReadQuality)
+      );
+      setSabakDhorReadNotes(toText(data.currentSabakDhorReadNotes));
 
-        setDhorReadQuality(pickText(data.currentDhorRead, data.currentDhorReadQuality));
-        setDhorReadNotes(toText(data.currentDhorReadNotes));
-      }
-
-      // today's log overrides if exists
-      
+      setDhorReadQuality(pickText(data.currentDhorRead, data.currentDhorReadQuality));
+      setDhorReadNotes(toText(data.currentDhorReadNotes));
     }
+  }
 
-    if (studentUid) loadStudent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentUid, dateKey]);
+  loadStudent();
+}, [studentUid, dateKey]);
 
-    useEffect(() => {
-  resetFields();
-  setMarkGoalCompleted(false);
-  setMsg(null);
-}, [studentUid]);
+  
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
