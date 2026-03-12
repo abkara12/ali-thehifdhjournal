@@ -440,22 +440,7 @@ resetFields();
       setSaving(false);
     }
   }
-  setSabak("");
-setSabakDhor("");
-setDhor("");
-
-setSabakReadQuality("");
-setSabakReadNotes("");
-
-setSabakDhorReadQuality("");
-setSabakDhorReadNotes("");
-
-setDhorReadQuality("");
-setDhorReadNotes("");
-
-setSabakDhorMistakes("");
-setDhorMistakes("");
-
+  
   if (checking) {
     return (
       <Shell title="Loading…" subtitle="Opening student page…">
