@@ -351,8 +351,8 @@ export default function OverviewPage() {
                             {toText(r.sabakRead) || "—"}
                           </td>
                          <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
-  {toText(r.notes) || "—"}
-</td>
+                          {toText(r.notes) || "—"}
+                        </td>
 
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
                             {toText(r.sabakDhor) || "—"}
@@ -361,8 +361,8 @@ export default function OverviewPage() {
                             {toText(r.sabakDhorRead) || "—"}
                           </td>
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
-  {toText(r.notes) || "—"}
-</td>
+                          {toText(r.notes) || "—"}
+                        </td>
 
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
                             {toText(r.dhor) || "—"}
