@@ -352,7 +352,7 @@ export default function OverviewPage() {
                             {toText(r.sabakRead) || "—"}
                           </td>
                           <td className="py-4 px-4 text-gray-700 border-l border-gray-100 max-w-[200px]">
-                          {toText(r.sabakDhorReadNotes) || "—"}
+                          {toText(r.sabakReadNotes) || "—"}
                         </td>
 
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
