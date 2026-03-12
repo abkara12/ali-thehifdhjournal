@@ -50,27 +50,28 @@ function getMonthLabel(dateKey?: string) {
 }
 type LogRow = {
   id: string;
-  dateKey?: string;
-
-  sabak?: string;
-  sabakRead?: string;
-
-  sabakDhor?: string;
-  sabakDhorRead?: string;
-
-  dhor?: string;
-  dhorRead?: string;
-
-  weeklyGoal?: string;
-
-  sabakDhorMistakes?: string;
-  dhorMistakes?: string;
-
-  notes?: string; // ✅ ADD THIS
-
-  weeklyGoalStartDateKey?: string;
-  weeklyGoalCompletedDateKey?: string;
-  weeklyGoalDurationDays?: number | string;
+   dateKey?: string;
+ 
+   sabak?: string;
+   sabakRead?: string;
+   sabakReadNotes?: string;
+ 
+   sabakDhor?: string;
+   sabakDhorRead?: string;
+   sabakDhorReadNotes?: string;
+ 
+   dhor?: string;
+   dhorRead?: string;
+   dhorReadNotes?: string;
+ 
+   weeklyGoal?: string;
+ 
+   sabakDhorMistakes?: string;
+   dhorMistakes?: string;
+ 
+   weeklyGoalStartDateKey?: string;
+   weeklyGoalCompletedDateKey?: string;
+   weeklyGoalDurationDays?: number | string;
 };
 
 async function fetchLogs(uid: string): Promise<LogRow[]> {
@@ -350,8 +351,8 @@ export default function OverviewPage() {
                           <td className="py-4 px-4 text-gray-700 border-l border-gray-100">
                             {toText(r.sabakRead) || "—"}
                           </td>
-                         <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
-                          {toText(r.notes) || "—"}
+                          <td className="py-4 px-4 text-gray-700 border-l border-gray-100 max-w-[200px]">
+                          {toText(r.sabakDhorReadNotes) || "—"}
                         </td>
 
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
@@ -361,7 +362,7 @@ export default function OverviewPage() {
                             {toText(r.sabakDhorRead) || "—"}
                           </td>
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
-                          {toText(r.notes) || "—"}
+                          {toText(r.sabakDhorReadNotes) || "—"}
                         </td>
 
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
@@ -371,7 +372,7 @@ export default function OverviewPage() {
                             {toText(r.dhorRead) || "—"}
                           </td>
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
-  {toText(r.notes) || "—"}
+  {toText(r.dhorReadNotes) || "—"}
 </td>
 
                           <td className="py-4 px-4 text-gray-800 border-l border-gray-100">
