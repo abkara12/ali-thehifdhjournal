@@ -1,7 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import admin from "firebase-admin";
 
-// Environment variables
+// Initialize Admin SDK
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -10,7 +9,6 @@ if (!projectId || !clientEmail || !privateKey) {
   throw new Error("Firebase environment variables are not set.");
 }
 
-// Initialize Admin SDK
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
@@ -23,13 +21,12 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+// App Router expects an exported method
+export async function GET() {
   try {
     const usersSnapshot = await db.collection("users").get();
-    const reports = [];
+    const reports: any[] = [];
+
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -53,9 +50,15 @@ export default async function handler(
       }
     }
 
-    res.status(200).json({ reports });
+    return new Response(JSON.stringify({ reports }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Server error" });
+    return new Response(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
