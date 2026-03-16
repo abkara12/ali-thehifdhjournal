@@ -1,6 +1,7 @@
+// /app/api/sendWeeklyReports/route.ts
 import admin from "firebase-admin";
 
-// Initialize Admin SDK
+// ----------------- Initialize Admin SDK -----------------
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -21,7 +22,7 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// App Router expects an exported method
+// ----------------- API Route -----------------
 export async function GET() {
   try {
     const usersSnapshot = await db.collection("users").get();
@@ -37,10 +38,25 @@ export async function GET() {
         .collection("users")
         .doc(userDoc.id)
         .collection("logs")
-        .where("date", ">=", sevenDaysAgo)
         .get();
 
-      if (!logsSnapshot.empty) {
+      // Filter logs for last 7 days (works with Timestamp or string)
+      const recentLogs = logsSnapshot.docs.filter((logDoc) => {
+        const logData = logDoc.data();
+        let logDate: Date;
+
+        if (logData.date?.toDate) {
+          // Firestore Timestamp
+          logDate = logData.date.toDate();
+        } else {
+          // Assume string
+          logDate = new Date(logData.date);
+        }
+
+        return logDate >= sevenDaysAgo;
+      });
+
+      if (recentLogs.length > 0) {
         const reportText = `Assalaamu Alaikum\n\nWeekly Hifdh Report\nStudent: ${userData.name}\n\n📅 ${new Date().toLocaleDateString()}\n`;
         reports.push({
           student: userData.name,
