@@ -48,15 +48,31 @@ export async function GET() {
         return logDate >= sevenDaysAgo;
       });
 
+      let monthLabel = "";
+
+      if (recentLogs.length > 0) {
+        const firstLog = recentLogs[0].data();
+        const d = firstLog.createdAt?.toDate
+          ? firstLog.createdAt.toDate()
+          : new Date();
+
+        monthLabel = d.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        });
+      }
+
       let reportText = `السلام عليكم ورحمة الله وبركاته
 
 📖 Weekly Hifdh Report
 Student: ${userData.username}
+Ustad: Moulana Shaheed Bhabha
+Month: ${monthLabel}
 
 `;
 
       if (recentLogs.length > 0) {
-        recentLogs.forEach((logDoc) => {
+        recentLogs.forEach((logDoc, index) => {
           const logData = logDoc.data();
 
           const dateObj = logData.createdAt?.toDate
@@ -67,36 +83,69 @@ Student: ${userData.username}
             weekday: "short",
           });
 
-          const dateString = dateObj.toISOString().split("T")[0];
+          const dateFormatted = dateObj.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+          });
 
-          reportText += `${dayName} ${dateString}
+          reportText += `${dayName} ${dateFormatted}
 
-Sabak: ${logData.sabak ?? "-"} | ${logData.sabakReadQuality ?? "-"}
-Note: ${logData.sabakReadNotes ?? "-"}
+Sabak: ${logData.sabak ?? "-"} | ${logData.sabakReadQuality ?? "-"}`;
 
-Sabak Dhor: ${logData.sabakDhor ?? "-"} | ${logData.sabakDhorReadQuality ?? "-"}
-Note: ${logData.sabakDhorReadNotes ?? "-"}
+          if (logData.sabakReadNotes) {
+            reportText += `\nNote: ${logData.sabakReadNotes}`;
+          }
 
-Dhor: ${logData.dhor ?? "-"} | ${logData.dhorReadQuality ?? "-"}
-Note: ${logData.dhorReadNotes ?? "-"}
+          reportText += `
+
+Sabak Dhor: ${logData.sabakDhor ?? "-"} | ${
+            logData.sabakDhorReadQuality ?? "-"
+          }`;
+
+          if (logData.sabakDhorReadNotes) {
+            reportText += `\nNote: ${logData.sabakDhorReadNotes}`;
+          }
+
+          reportText += `
+
+Dhor: ${logData.dhor ?? "-"} | ${logData.dhorReadQuality ?? "-"}`;
+
+          if (logData.dhorReadNotes) {
+            reportText += `\nNote: ${logData.dhorReadNotes}`;
+          }
+
+          reportText += `
 
 Mistakes: Sabak Dhor ${logData.sabakDhorMistakes ?? "0"} | Dhor ${
             logData.dhorMistakes ?? "0"
           }
 
 `;
+
+          if (index !== recentLogs.length - 1) {
+            reportText += `──────────\n\n`;
+          }
         });
 
         const latestLog = recentLogs[0].data();
 
+        const goalStatus = latestLog.weeklyGoalCompleted
+          ? "Completed"
+          : "In Progress";
+
         reportText += `🎯 Weekly Goal: ${latestLog.weeklyGoal ?? "-"}
-📊 Goal Status: ${
-          latestLog.weeklyGoalCompleted ? "Completed" : "In Progress"
-        }
+📊 Goal Status: ${goalStatus}
 Duration: ${latestLog.weeklyGoalDurationDays ?? "-"}
-`;
+
+────────────────
+
+Powered by The Hifdh Journal`;
       } else {
-        reportText += `No logs recorded for the last 7 days.`;
+        reportText += `No logs recorded for the last 7 days.
+
+────────────────
+
+Powered by The Hifdh Journal`;
       }
 
       reports.push({
