@@ -34,6 +34,7 @@ export async function GET() {
     for (const userDoc of usersSnapshot.docs) {
       const userData = userDoc.data();
 
+      // Get all logs for this user
       const logsSnapshot = await db
         .collection("users")
         .doc(userDoc.id)
@@ -41,23 +42,34 @@ export async function GET() {
         .orderBy("createdAt", "desc")
         .get();
 
+      // Filter logs from the last 7 days
       const recentLogs = logsSnapshot.docs.filter((logDoc) => {
         const logData = logDoc.data();
         const createdAt = logData.createdAt?.toDate?.();
         return createdAt && createdAt >= sevenDaysAgo;
       });
 
-      if (recentLogs.length > 0) {
-        // Create detailed report text
-        const reportLines = recentLogs.map((log) => {
-          const logData = log.data();
+      if (recentLogs.length > 0 || userData.weeklyGoal) {
+        // Build detailed report
+        const logDetails = recentLogs.map((logDoc) => {
+          const logData = logDoc.data();
           return `
 Current Dhor: ${logData.currentDhor || "-"} (${logData.currentDhorMistakes || "0"} mistakes, ${logData.currentDhorReadQuality || "-"})
 Dhor Notes: ${logData.currentDhorReadNotes || "-"}
 Current Sabak: ${logData.currentSabak || "-"} (${logData.currentSabakDhorMistakes || "0"} mistakes, ${logData.currentSabakReadQuality || "-"})
 Sabak Notes: ${logData.currentSabakReadNotes || "-"}
+Sabak Extra Notes: ${logData.currentSabakReadNotes || "-"}
 `;
         }).join("\n");
+
+        // Add weekly goal info
+        const weeklyGoalText = `
+Weekly Goal: ${userData.weeklyGoal || "-"}
+Goal Start Date: ${userData.weeklyGoalStartDateKey || "-"}
+Goal Week Key: ${userData.weeklyGoalWeekKey || "-"}
+Goal Completed Date: ${userData.weeklyGoalCompletedDateKey || "-"}
+Goal Duration (days): ${userData.weeklyGoalDurationDays || "-"}
+`;
 
         const reportText = `Assalaamu Alaikum
 
@@ -66,7 +78,8 @@ Student: ${userData.username}
 
 📅 ${new Date().toLocaleDateString()}
 
-${reportLines}`;
+${logDetails}
+${weeklyGoalText}`;
 
         reports.push({
           student: userData.username,
