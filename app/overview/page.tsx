@@ -131,15 +131,45 @@ export default function OverviewPage() {
   return map;
 }, [rows]);
 
+const currentMonth = getMonthLabel(
+  new Date().toISOString().slice(0, 10)
+);
 
-  const summary = useMemo(() => {
-    if (!rows.length) return { totalDays: 0, avgSabak: 0, lastGoal: 0 };
-    const sabakNums = rows.map((r) => num(r.sabak)).filter((n) => n > 0);
-    const avgSabak =
-      sabakNums.length ? sabakNums.reduce((a, b) => a + b, 0) / sabakNums.length : 0;
-    const lastGoal = num(rows[0]?.weeklyGoal);
-    return { totalDays: rows.length, avgSabak, lastGoal };
-  }, [rows]);
+const currentMonthAbsents = absentsByMonth[currentMonth] || 0;
+
+
+ const summary = useMemo(() => {
+  if (!rows.length)
+    return {
+      totalDays: 0,
+      avgSabakLines: 0,
+      avgPresentLines: 0,
+      lastGoal: 0,
+    };
+
+  // ALL days (including 0 sabak)
+  const totalLines = rows.reduce((sum, r) => sum + num(r.sabak) * 13, 0);
+  const avgSabakLines = totalLines / rows.length;
+
+  // ONLY present days
+  const presentRows = rows.filter((r) => r.attendance === "present");
+  const totalPresentLines = presentRows.reduce(
+    (sum, r) => sum + num(r.sabak) * 13,
+    0
+  );
+  const avgPresentLines = presentRows.length
+    ? totalPresentLines / presentRows.length
+    : 0;
+
+  const lastGoal = num(rows[0]?.weeklyGoal);
+
+  return {
+    totalDays: rows.length,
+    avgSabakLines,
+    avgPresentLines,
+    lastGoal,
+  };
+}, [rows]);
 
   if (loadingUser) {
     return (
@@ -215,17 +245,37 @@ export default function OverviewPage() {
       </header>
 
       <section className="max-w-6xl mx-auto px-6 sm:px-10 pb-16">
-        <div className="grid sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid sm:grid-cols-4 gap-4 mb-8">
           <StatCard label="Days logged" value={String(summary.totalDays)} />
           <StatCard
             label="Average Sabak"
-            value={summary.avgSabak ? summary.avgSabak.toFixed(1) : "—"}
+            value={
+              summary.avgSabakLines
+                ? `${summary.avgSabakLines.toFixed(1)} lines/day`
+                : "—"
+            }
+            />
+                      <StatCard
+            label="Absences (this month)"
+            value={String(currentMonthAbsents)}
           />
+            
           <StatCard
             label="Latest weekly goal"
             value={summary.lastGoal ? String(summary.lastGoal) : "—"}
           />
         </div>
+
+        <div className="mb-6 flex flex-wrap gap-3">
+  {Object.entries(absentsByMonth).map(([month, count]) => (
+    <div
+      key={month}
+      className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700"
+    >
+      {month}: {count} absent day(s)
+    </div>
+  ))}
+</div>
 
         <div className="rounded-3xl border border-gray-300 bg-white/70 backdrop-blur shadow-sm overflow-hidden">
           <div className="p-6 sm:p-8 border-b border-gray-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

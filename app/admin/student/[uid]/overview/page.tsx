@@ -164,6 +164,7 @@ setStudentName(
   }, [studentUid]);
 
   const absentsByMonth = useMemo(() => {
+    
   const map: Record<string, number> = {};
 
   rows.forEach((r) => {
