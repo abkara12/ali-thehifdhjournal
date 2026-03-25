@@ -657,10 +657,10 @@ async function handleSave(e: React.FormEvent) {
           </div>
 
           {/* Weekly goal block */}
-          <div className="rounded-3xl border border-gray-300 bg-white/70 p-5 sm:p-6">
+         <div className="rounded-3xl border border-gray-200 bg-white/70 p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
               <div>
-                <div className="text-sm font-semibold text-gray-900">Weekly Goal</div>
+                <div className="text-sm font-semibold text-[#5B726D]">Weekly Goal</div>
                 <div className="mt-1 text-sm text-gray-700">
                   Set once per week. When finished, tick “Completed” to calculate duration.
                 </div>
@@ -680,11 +680,11 @@ async function handleSave(e: React.FormEvent) {
                   </span>
                 </div>
 
-                <input
-                    value={weeklyGoal}
-  onChange={(e) => setWeeklyGoal(e.target.value)}
-  disabled={goalLockedThisWeek}
-                  className="h-12 rounded-2xl border border-gray-300 bg-white/80 px-4 outline-none focus:ring-2 focus:ring-[#B8963D]/30 disabled:opacity-60"
+                 <input
+                  value={weeklyGoal}
+                  onChange={(e) => setWeeklyGoal(e.target.value)}
+                  disabled={goalLockedThisWeek}
+                  className="h-12 rounded-2xl border border-gray-200 bg-white/80 px-4 outline-none focus:ring-2 focus:ring-[#A46B72]/30 disabled:opacity-60"
                   placeholder="Example: 10 pages"
                 />
               </label>
@@ -708,7 +708,7 @@ async function handleSave(e: React.FormEvent) {
 
                 <input
                   type="checkbox"
-                  checked={markGoalCompleted || goalAlreadyCompleted}
+                  checked={goalAlreadyCompleted ? true : markGoalCompleted}
                   disabled={goalAlreadyCompleted || !weeklyGoal.trim()}
                   onChange={(e) => setMarkGoalCompleted(e.target.checked)}
                   className="h-6 w-6 accent-black disabled:opacity-50"
